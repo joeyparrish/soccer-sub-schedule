@@ -1,3 +1,15 @@
+body:not(.too-small) > .too-small {
+  display: none;
+}
+
+body.too-small > .too-small {
+  display: block;
+}
+
+body.too-small > :not(.too-small) {
+  display: none;
+}
+
 label {
   display: inline-block;
   margin: 0 1em;

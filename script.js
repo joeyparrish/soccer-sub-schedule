@@ -393,6 +393,8 @@
 
       appendTimeline(timeline, '', 'height: 1em');
     }
+
+    checkSizes();
   }
 
   function getState() {
@@ -469,7 +471,20 @@
     return state;
   }
 
+  function checkSizes() {
+    const schedule = document.getElementById('schedule-1');
+    if (schedule.clientWidth > document.body.clientWidth) {
+      document.body.classList.add('too-small');
+      console.error('TOO SMALL');
+    } else {
+      document.body.classList.remove('too-small');
+      console.error('RIGHT SIZE');
+    }
+  }
+
   function main() {
+    window.addEventListener('resize', checkSizes);
+
     for (const input of document.querySelectorAll('input')) {
       input.addEventListener('change', () => {
         buildTables();
