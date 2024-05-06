@@ -13,29 +13,24 @@
     return players;
   }
 
-  function forEachTime(callbackTime, callbackHalfPost = null) {
+  function forEachTime(callback) {
     const timePerHalf = numberInput('time-per-half');
     const schedulingInterval = numberInput('scheduling-interval');
 
-    for (const half of [1, 2]) {
-      let count = 0;
-      for (let time = 0; time < timePerHalf; time += schedulingInterval) {
-        callbackTime(half, time);
-        count++;
-      }
-
-      if (callbackHalfPost) callbackHalfPost(half, count);
+    for (let time = 0; time < timePerHalf; time += schedulingInterval) {
+      callback(time);
     }
   }
 
-  function remakeRow(title, makeCell) {
+  function remakeRow(half, title, makeCell) {
+    const schedule = document.getElementById(`schedule-${half}`);
     // Create the row if needed.
-    const rowId = `row-${title}`;
+    const rowId = `row-${half}-${title}`;
     let row = document.getElementById(rowId);
     if (!row) {
       row = document.createElement('tr');
       row.id = rowId;
-      document.getElementById('schedule').appendChild(row);
+      schedule.appendChild(row);
 
       // Create the header and footer cells.
       const header = document.createElement('th');
@@ -60,26 +55,26 @@
     }
 
     // Create any cells that are missing.
-    forEachTime(
-        (half, time) => {
-          const cellId = `cell-${title}-h${half}-${time}`;
-          let cell = document.getElementById(cellId);
-          if (!cell) {
-            cell = makeCell(title, half, time);
-            cell.id = cellId;
-          }
+    let colspan = 0;
+    forEachTime((time) => {
+      const cellId = `cell-${title}-${half}-${time}`;
+      let cell = document.getElementById(cellId);
+      if (!cell) {
+        cell = makeCell(title, half, time);
+        cell.id = cellId;
+      }
 
-          // If the cell is already in the list, it will be moved to the end.
-          // This will have a side-effect or sorting all the cells.
-          row.appendChild(cell);
+      // If the cell is already in the list, it will be moved to the end.
+      // This will have a side-effect or sorting all the cells.
+      row.appendChild(cell);
 
-          // Mark this cell so we don't clean it up later.
-          cell.visited = true;
-        },
-        (half, colspan) => {
-          const halfCell = document.getElementById(`half-${half}`);
-          halfCell.setAttribute('colspan', colspan);
-        });
+      // Mark this cell so we don't clean it up later.
+      cell.visited = true;
+      colspan++;
+    });
+
+    const halfCell = document.getElementById(`half-${half}`);
+    halfCell.setAttribute('colspan', colspan);
 
     // Clean up any cells we don't need.
     for (const child of Array.from(row.children)) {
@@ -164,12 +159,15 @@
     return cell;
   }
 
-  function buildTable() {
-    remakeRow('', makeHeaderCell);
+  function buildTables() {
+    for (const half of [1, 2]) {
+      remakeRow(half, '', makeHeaderCell);
 
-    for (const position of positions) {
-      remakeRow(position, makeDataCell);
+      for (const position of positions) {
+        remakeRow(half, position, makeDataCell);
+      }
     }
+
     computeTotalsAndErrors();
   }
 
@@ -213,9 +211,9 @@
   }
 
   function cascadePlayer(player, position, chosenHalf, chosenTime, overwrite) {
-    forEachTime((half, time) => {
-      if (half == chosenHalf && time > chosenTime) {
-        const selectId = `select-${position}-${half}-${time}`;
+    forEachTime((time) => {
+      if (time > chosenTime) {
+        const selectId = `select-${position}-${chosenHalf}-${time}`;
         const select = document.getElementById(selectId);
         if (!select.value || overwrite) {
           select.value = player;
@@ -232,36 +230,38 @@
     const schedulingInterval = numberInput('scheduling-interval');
     const minTimePerPlayer = numberInput('min-time-per-player');
 
-    forEachTime((half, time) => {
-      for (const position of positions) {
-        const selectId = `select-${position}-${half}-${time}`;
-        const select = document.getElementById(selectId);
-        const player = select.value;
-        if (!player) {
-          select.classList.add('warning');
-          continue;
-        } else {
-          select.classList.remove('warning');
-        }
+    for (const half of [1, 2]) {
+      forEachTime((time) => {
+        for (const position of positions) {
+          const selectId = `select-${position}-${half}-${time}`;
+          const select = document.getElementById(selectId);
+          const player = select.value;
+          if (!player) {
+            select.classList.add('warning');
+            continue;
+          } else {
+            select.classList.remove('warning');
+          }
 
-        // Flag any player in two places at once.
-        const playerTimeId = `${player}-${half}-${time}`;
-        if (!dupMap.has(playerTimeId)) {
-          dupMap.set(playerTimeId, position);
-          select.classList.remove('error');
-        } else {
-          const position2 = dupMap.get(playerTimeId);
-          const selectId2 = `select-${position2}-${half}-${time}`;
-          const select2 = document.getElementById(selectId2);
-          select.classList.add('error');
-          select2.classList.add('error');
-        }
+          // Flag any player in two places at once.
+          const playerTimeId = `${player}-${half}-${time}`;
+          if (!dupMap.has(playerTimeId)) {
+            dupMap.set(playerTimeId, position);
+            select.classList.remove('error');
+          } else {
+            const position2 = dupMap.get(playerTimeId);
+            const selectId2 = `select-${position2}-${half}-${time}`;
+            const select2 = document.getElementById(selectId2);
+            select.classList.add('error');
+            select2.classList.add('error');
+          }
 
-        // Track player time.
-        const previousTime = timeMap.get(player) || 0;
-        timeMap.set(player, previousTime + schedulingInterval);
-      }
-    });
+          // Track player time.
+          const previousTime = timeMap.get(player) || 0;
+          timeMap.set(player, previousTime + schedulingInterval);
+        }
+      });
+    }
 
     const totals = document.getElementById('player-totals');
     const players = getPlayers();
@@ -312,13 +312,15 @@
     for (const position of positions) {
       state.positions[position] = {};
 
-      forEachTime((half, time) => {
-        const selectId = `select-${position}-${half}-${time}`;
-        const select = document.getElementById(selectId);
-        const player = select.value;
+      for (const half of [1, 2]) {
+        forEachTime((time) => {
+          const selectId = `select-${position}-${half}-${time}`;
+          const select = document.getElementById(selectId);
+          const player = select.value;
 
-        state.positions[position][`${half}-${time}`] = player;
-      });
+          state.positions[position][`${half}-${time}`] = player;
+        });
+      }
     }
 
     console.log(JSON.stringify(state));
@@ -326,13 +328,15 @@
 
   function loadState(state) {
     for (const position of positions) {
-      forEachTime((half, time) => {
-        const player = state.positions[position][`${half}-${time}`] || '';
+      for (const half of [1, 2]) {
+        forEachTime((time) => {
+          const player = state.positions[position][`${half}-${time}`] || '';
 
-        const selectId = `select-${position}-${half}-${time}`;
-        const select = document.getElementById(selectId);
-        select.value = player;
-      });
+          const selectId = `select-${position}-${half}-${time}`;
+          const select = document.getElementById(selectId);
+          select.value = player;
+        });
+      }
     }
 
     document.getElementById('time-per-half').value = state.timePerHalf;
@@ -345,7 +349,7 @@
 
   function main() {
     for (const input of document.querySelectorAll('input')) {
-      input.addEventListener('change', buildTable);
+      input.addEventListener('change', buildTables);
     }
 
     document.getElementById('players').addEventListener(
@@ -353,7 +357,7 @@
     document.addEventListener('keydown', trackModifiers);
     document.addEventListener('keyup', trackModifiers);
 
-    buildTable();
+    buildTables();
   }
 
   main();
