@@ -1,0 +1,62 @@
+label {
+  display: inline-block;
+  margin: 0 1em;
+  width: 11em;
+  text-align: right;
+  vertical-align: top;
+}
+
+input[type="number"] {
+  display: inline-block;
+  width: 4em;
+}
+
+th, td {
+  width: 9em;
+}
+
+th.header, th.footer {
+  background-color: #ddaaaa;
+}
+
+th.half-1 {
+  background-color: #aadddd;
+}
+
+td.half-1 {
+  background-color: #ccffff;
+}
+
+th.half-2 {
+  background-color: #aaddaa;
+}
+
+td.half-2 {
+  background-color: #ccffcc;
+}
+
+#players {
+  height: 20em;
+}
+
+select.error {
+  background-color: red;
+}
+
+select.warning {
+  background-color: #ffffaa;
+}
+
+.instructions {
+  font-size: 125%;
+  margin: 1em;
+}
+
+#player-totals {
+  margin: 1em;
+  font-size: 125%;
+}
+
+#player-totals .error {
+  background-color: #ffaaaa;
+}
