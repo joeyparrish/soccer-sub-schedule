@@ -54,13 +54,11 @@
 
     // Mark the children so we can clean up unused children.
     for (const child of row.children) {
-      if (child.tagName.toLowerCase() == 'th') {
-        child.visited = true;
-        continue;
-      }
-
       child.visited = false;
     }
+    // Exclude the header and footer cells.
+    row.querySelector('th.header').visited = true;
+    row.querySelector('th.footer').visited = true;
 
     // Create any cells that are missing.
     let colspan = 0;
