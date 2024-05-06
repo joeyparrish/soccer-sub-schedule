@@ -435,14 +435,24 @@
     for (const position of positions) {
       for (const half of [1, 2]) {
         forEachTime((time) => {
-          const player = state.positions[position][`${half}-${time}`] || '';
-
+          const player = state.positions[position]?.[`${half}-${time}`] || '';
           const selectId = `select-${position}-${half}-${time}`;
           const select = document.getElementById(selectId);
           select.value = player;
         });
       }
     }
+  }
+
+  function buttonReaction(event, message) {
+    const originalText = event.target.innerText;
+    event.target.innerText = message;
+    event.target.disabled = true;
+
+    setTimeout(() => {
+      event.target.innerText = originalText;
+      event.target.disabled = false;
+    }, 1000);
   }
 
   function main() {
@@ -468,8 +478,21 @@
     document.addEventListener('keydown', trackModifiers);
     document.addEventListener('keyup', trackModifiers);
 
-    document.getElementById('save').addEventListener('click', () => {
+    document.getElementById('save').addEventListener('click', (event) => {
       localStorage.setItem('state', JSON.stringify(getState()));
+      buttonReaction(event, 'Saved!');
+    });
+
+    document.getElementById('clear').addEventListener('click', () => {
+      loadState({
+        timePerHalf: 20,
+        minTimePerPlayer: 15,
+        schedulingInterval: 2.5,
+        players: [],
+        positions: {},
+      });
+      computeOutputsAndErrors();
+      buttonReaction(event, 'Cleared!');
     });
 
     buildTables();

@@ -25,7 +25,9 @@ h2 {
 
 #buttons button {
   display: block;
-  margin: 1em;
+  margin: 0.5em 0;
+  float: right;
+  clear: right;
 }
 
 .split {
