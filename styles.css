@@ -47,6 +47,10 @@ select.warning {
   background-color: #ffffaa;
 }
 
+select.change {
+  font-weight: bold;
+}
+
 .instructions {
   font-size: 125%;
   margin: 1em;

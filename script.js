@@ -231,14 +231,23 @@
     const minTimePerPlayer = numberInput('min-time-per-player');
 
     for (const half of [1, 2]) {
-      forEachTime((time) => {
-        for (const position of positions) {
+      for (const position of positions) {
+        let previousPlayer = '';
+        forEachTime((time) => {
           const selectId = `select-${position}-${half}-${time}`;
           const select = document.getElementById(selectId);
           const player = select.value;
+
+          if (player != previousPlayer) {
+            select.classList.add('change');
+          } else {
+            select.classList.remove('change');
+          }
+          previousPlayer = player;
+
           if (!player) {
             select.classList.add('warning');
-            continue;
+            return;
           } else {
             select.classList.remove('warning');
           }
@@ -259,8 +268,8 @@
           // Track player time.
           const previousTime = timeMap.get(player) || 0;
           timeMap.set(player, previousTime + schedulingInterval);
-        }
-      });
+        });
+      }
     }
 
     const totals = document.getElementById('player-totals');
