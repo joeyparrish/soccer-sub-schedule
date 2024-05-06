@@ -175,8 +175,6 @@
         remakeRow(half, position, makeDataCell);
       }
     }
-
-    computeOutputsAndErrors();
   }
 
   function updatePlayerSelector(select) {
@@ -215,7 +213,6 @@
     for (const select of document.querySelectorAll('select.player')) {
       updatePlayerSelector(select);
     }
-    computeOutputsAndErrors();
   }
 
   function cascadePlayer(player, position, chosenHalf, chosenTime, overwrite) {
@@ -398,11 +395,9 @@
 
       appendTimeline(timeline, '', 'height: 1em');
     }
-
-    dumpState();
   }
 
-  function dumpState() {
+  function getState() {
     const state = {
       timePerHalf: numberInput('time-per-half'),
       minTimePerPlayer: numberInput('min-time-per-player'),
@@ -425,10 +420,18 @@
       }
     }
 
-    console.log(JSON.stringify(state));
+    return state;
   }
 
   function loadState(state) {
+    document.getElementById('time-per-half').value = state.timePerHalf;
+    document.getElementById('min-time-per-player').value = state.minTimePerPlayer;
+    document.getElementById('scheduling-interval').value = state.schedulingInterval;
+    document.getElementById('players').value = state.players.join('\n') + '\n';
+
+    buildTables();
+    updatePlayerSelectors();
+
     for (const position of positions) {
       for (const half of [1, 2]) {
         forEachTime((time) => {
@@ -440,32 +443,44 @@
         });
       }
     }
-
-    document.getElementById('time-per-half').value = state.timePerHalf;
-    document.getElementById('min-time-per-player').value = state.minTimePerPlayer;
-    document.getElementById('scheduling-interval').value = state.schedulingInterval;
-    document.getElementById('players').value = state.players.join('\n') + '\n';
-
-    computeOutputsAndErrors();
   }
 
   function main() {
     for (const input of document.querySelectorAll('input')) {
-      input.addEventListener('change', buildTables);
+      input.addEventListener('change', () => {
+        buildTables();
+        computeOutputsAndErrors();
+      });
     }
 
-    document.getElementById('players').addEventListener(
-        'change', updatePlayerSelectors);
-    document.getElementById('players').addEventListener(
-        'keypress', (event) => {
+    document.getElementById('players').addEventListener('change', () => {
+      updatePlayerSelectors();
+      computeOutputsAndErrors();
+    });
+
+    document.getElementById('players').addEventListener('keypress', (event) => {
       if (event.code == 'Enter') {
         updatePlayerSelectors();
+        computeOutputsAndErrors();
       }
     });
+
     document.addEventListener('keydown', trackModifiers);
     document.addEventListener('keyup', trackModifiers);
 
+    document.getElementById('save').addEventListener('click', () => {
+      localStorage.setItem('state', JSON.stringify(getState()));
+    });
+
     buildTables();
+
+    const state = localStorage.getItem('state');
+    if (state) {
+      console.log('Loading state', state);
+      loadState(JSON.parse(state));
+    }
+
+    computeOutputsAndErrors();
   }
 
   main();

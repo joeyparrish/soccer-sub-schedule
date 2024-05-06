@@ -17,6 +17,17 @@ h2 {
   font-weight: bold;
 }
 
+#buttons {
+  position: absolute;
+  top: 1em;
+  right: 1em;
+}
+
+#buttons button {
+  display: block;
+  margin: 1em;
+}
+
 .split {
   box-sizing: border-box;
   width: 100%;
