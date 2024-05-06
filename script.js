@@ -455,6 +455,22 @@
     }, 1000);
   }
 
+  function compressState(state) {
+    const stateU8 = new TextEncoder().encode(state);
+    const stateZ = fflate.zlibSync(stateU8, { level: 9 });
+    const stateZS = String.fromCharCode.apply(null, stateZ);
+    const b64 = btoa(stateZS);
+    return b64;
+  }
+
+  function decompressState(b64) {
+    const stateZS = atob(b64);
+    const stateZ = Uint8Array.from(stateZS, c => c.charCodeAt(0));
+    const stateU8 = fflate.unzlibSync(stateZ);
+    const state = new TextDecoder().decode(stateU8);
+    return state;
+  }
+
   function main() {
     for (const input of document.querySelectorAll('input')) {
       input.addEventListener('change', () => {
@@ -495,12 +511,30 @@
       buttonReaction(event, 'Cleared!');
     });
 
+    document.getElementById('share').addEventListener('click', () => {
+      const state = JSON.stringify(getState());
+      console.log('Sharing state', state);
+      const hash = compressState(state);
+      console.log(`State compressed from ${state.length} to ${hash.length}`);
+
+      const url = (new URL(`#${hash}`, location.href)).toString();
+      navigator.clipboard.writeText(url);
+      buttonReaction(event, 'Link copied!');
+    });
+
     buildTables();
 
-    const state = localStorage.getItem('state');
-    if (state) {
-      console.log('Loading state', state);
+    const hash = location.hash.substr(1);
+    if (hash) {
+      const state = decompressState(hash);
+      console.log('Loading from hash', state);
       loadState(JSON.parse(state));
+    } else {
+      const state = localStorage.getItem('state');
+      if (state) {
+        console.log('Loading state', state);
+        loadState(JSON.parse(state));
+      }
     }
 
     computeOutputsAndErrors();
