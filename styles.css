@@ -11,6 +11,25 @@ input[type="number"] {
   width: 4em;
 }
 
+h2 {
+  font-size: 125%;
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
+.split {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 0 1em;
+}
+
+.split > * {
+  box-sizing: border-box;
+  display: inline-block;
+  width: calc(50% - 3em);
+  vertical-align: top;
+}
+
 th, td {
   width: 9em;
 }
@@ -57,13 +76,7 @@ select.change {
 }
 
 #player-totals {
-  margin: 1em;
   font-size: 125%;
-}
-
-#player-count {
-  margin-bottom: 1em;
-  font-weight: bold;
 }
 
 #player-totals .error {

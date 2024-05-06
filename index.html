@@ -1,55 +1,66 @@
 <html>
- <head>
-  <link rel="stylesheet" href="styles.css">
- </head>
- <body>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
 
-  <h1>Soccer Sub Scheduling Tool</h1>
+    <h1>Soccer Sub Scheduling Tool</h1>
 
-  <div>
-   <label for="time-per-half">Time per half</label>
-   <input id="time-per-half" type=number max=999 value=20>
-  </div>
+    <div class="split">
+      <div>
+        <h2>Inputs</h2>
 
-  <div>
-   <label for="min-time-per-player">Minimum time per player</label>
-   <input id="min-time-per-player" type=number max=999 value=15>
-  </div>
+        <div>
+          <label for="time-per-half">Time per half</label>
+          <input id="time-per-half" type=number max=999 value=20>
+        </div>
 
-  <div>
-   <label for="scheduling-interval">Scheduling interval</label>
-   <input id="scheduling-interval" type=number max=999 value=2.5>
-  </div>
+        <div>
+          <label for="min-time-per-player">Minimum time per player</label>
+          <input id="min-time-per-player" type=number max=999 value=15>
+        </div>
 
-  <div>
-   <label for="players">Players</label>
-   <textarea id="players"></textarea>
-  </div>
+        <div>
+          <label for="scheduling-interval">Scheduling interval</label>
+          <input id="scheduling-interval" type=number max=999 value=2.5>
+        </div>
 
-  <div class="instructions">
-    Hold <tt>CTRL</tt> to <b>fill all future</b> cells in this half.
-    <br>
-    Hold <tt>SHIFT</tt> to <b>fill all future <i>empty</i></b> cells in this half.
-  </div>
+        <div>
+          <label for="players">Players</label>
+          <textarea id="players"></textarea>
+        </div>
+      </div>
 
-  <div id="schedule-container">
-    <table id="schedule-1">
-      <tr id="halves">
-        <th></th>
-        <th class="half-1" id="half-1">First Half</th>
-      </tr>
-    </table>
-    <table id="schedule-2">
-      <tr id="halves">
-        <th></th>
-        <th class="half-2" id="half-2">Second Half</th>
-      </tr>
-    </table>
-  </div>
+      <div id="player-totals">
+        <h2 id="player-count"></h2>
+      </div>
+    </div>
 
-  <div id="player-totals">
-  </div>
+    <div class="instructions">
+      Hold <tt>CTRL</tt> to <b>fill all future</b> cells in this half.
+      <br>
+      Hold <tt>SHIFT</tt> to <b>fill all future <i>empty</i></b> cells in this half.
+    </div>
 
- </body>
- <script src="script.js"></script>
+    <div id="schedule-container">
+      <table id="schedule-1">
+        <tr id="halves">
+          <th></th>
+          <th class="half-1" id="half-1">First Half</th>
+        </tr>
+      </table>
+      <table id="schedule-2">
+        <tr id="halves">
+          <th></th>
+          <th class="half-2" id="half-2">Second Half</th>
+        </tr>
+      </table>
+    </div>
+
+    <div id="timeline">
+      <h2>Substitution Timeline</h2>
+    </div>
+
+   </body>
+   <script src="script.js"></script>
 </html>

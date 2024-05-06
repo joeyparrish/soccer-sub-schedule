@@ -22,6 +22,14 @@
     }
   }
 
+  function getPlayerAt(position, half, time) {
+    const selectId = `select-${position}-${half}-${time}`;
+    const select = document.getElementById(selectId);
+    const player = select.value;
+    const change = select.classList.contains('change');
+    return {player, change, select};
+  }
+
   function remakeRow(half, title, makeCell) {
     const schedule = document.getElementById(`schedule-${half}`);
     // Create the row if needed.
@@ -118,7 +126,7 @@
                       select.metadata.half,
                       select.metadata.time,
                       /* overwrite= */ controlClick);
-        computeTotalsAndErrors();
+        computeOutputsAndErrors();
       }
 
       select.blur();
@@ -139,7 +147,7 @@
 
     select.addEventListener('mousedown', (event) => {
       trackModifiers(event);
-      computeTotalsAndErrors();
+      computeOutputsAndErrors();
     });
 
     select.addEventListener('change', () => {
@@ -147,11 +155,11 @@
         cascadePlayer(select.value, position, half, time,
                       /* overwrite */ controlClick);
       }
-      computeTotalsAndErrors();
+      computeOutputsAndErrors();
     });
 
-    select.addEventListener('focus', computeTotalsAndErrors);
-    select.addEventListener('blur', computeTotalsAndErrors);
+    select.addEventListener('focus', computeOutputsAndErrors);
+    select.addEventListener('blur', computeOutputsAndErrors);
 
     updatePlayerSelector(select);
     cell.appendChild(select);
@@ -168,7 +176,7 @@
       }
     }
 
-    computeTotalsAndErrors();
+    computeOutputsAndErrors();
   }
 
   function updatePlayerSelector(select) {
@@ -207,7 +215,7 @@
     for (const select of document.querySelectorAll('select.player')) {
       updatePlayerSelector(select);
     }
-    computeTotalsAndErrors();
+    computeOutputsAndErrors();
   }
 
   function cascadePlayer(player, position, chosenHalf, chosenTime, overwrite) {
@@ -221,10 +229,17 @@
       }
     });
 
-    computeTotalsAndErrors();
+    computeOutputsAndErrors();
   }
 
-  function computeTotalsAndErrors() {
+  function appendTimeline(timeline, message, style=null) {
+    const div = document.createElement('div');
+    div.innerText = message;
+    div.style = style;
+    timeline.appendChild(div);
+  }
+
+  function computeOutputsAndErrors() {
     const dupMap = new Map();
     const timeMap = new Map();
     const schedulingInterval = numberInput('scheduling-interval');
@@ -234,9 +249,7 @@
       for (const position of positions) {
         let previousPlayer = '';
         forEachTime((time) => {
-          const selectId = `select-${position}-${half}-${time}`;
-          const select = document.getElementById(selectId);
-          const player = select.value;
+          const {player, select} = getPlayerAt(position, half, time);
 
           if (player != previousPlayer) {
             select.classList.add('change');
@@ -275,13 +288,7 @@
     const totals = document.getElementById('player-totals');
     const players = getPlayers();
 
-    const countId = 'player-count';
-    let count = document.getElementById(countId);
-    if (!count) {
-      count = document.createElement('div');
-      count.id = countId;
-      totals.appendChild(count);
-    }
+    const count = document.getElementById('player-count');
     count.innerText = `${players.length} players`;
 
     // Mark the children so we can clean up unused children.
@@ -314,6 +321,82 @@
       if (!child.visited) {
         totals.removeChild(child);
       }
+    }
+
+    // Compute each player's timeline
+    const playerTimeline = new Map();
+    for (const player of players) {
+      playerTimeline.set(player, new Map());
+    }
+    for (const half of [1, 2]) {
+      forEachTime((time) => {
+        for (const position of positions) {
+          const {player, change} = getPlayerAt(position, half, time);
+          if (player) {
+            playerTimeline.get(player).set(`${half}-${time}`, position);
+          }
+        }
+      });
+    }
+
+    // Compute the substitution timeline
+    const timeline = document.getElementById('timeline');
+    for (const child of Array.from(timeline.children)) {
+      if (child.tagName.toLowerCase() != 'h2') {
+        timeline.removeChild(child);
+      }
+    }
+    for (const half of [1, 2]) {
+      const nth = ['', 'First', 'Second'][half];
+      let previousTime = null;
+
+      // Compute starters first
+      const starters = [];
+      for (const position of positions) {
+        const {player} = getPlayerAt(position, half, /* time= */ 0);
+        starters.push(`${player} at ${position}`);
+      }
+      appendTimeline(timeline, `${nth} half start: ${starters.join(', ')}`,
+                     'font-weight: bold');
+
+      forEachTime((time) => {
+        for (const position of positions) {
+          const {player, change} = getPlayerAt(position, half, time);
+
+          const {player: previousPlayer} = previousTime ?
+              getPlayerAt(position, half, previousTime) :
+              {player: ''};
+
+          const playerPreviousPosition = player ?
+              playerTimeline.get(player).get(`${half}-${previousTime}`) :
+              '';
+          const previousPlayerNewPosition = previousPlayer ?
+              playerTimeline.get(previousPlayer).get(`${half}-${time}`) :
+              '';
+
+          if (change) {
+            if (time != 0) {  // starters already handled specially above
+              if (playerPreviousPosition) {
+                let message = `${time}: ${player} moves from ${playerPreviousPosition} to ${position}`;
+                if (!previousPlayerNewPosition) {
+                  message += `, ${previousPlayer} out`;
+                }
+                appendTimeline(timeline, message);
+              } else {
+                let message = `${time}: ${player} in at ${position}`;
+                if (!previousPlayerNewPosition) {
+                  message += `, ${previousPlayer} out`;
+                }
+                appendTimeline(timeline, message);
+              }
+            }
+          }
+        }
+
+        previousTime = time;
+      });
+
+      appendTimeline(timeline, '', 'height: 1em');
     }
 
     dumpState();
@@ -363,7 +446,7 @@
     document.getElementById('scheduling-interval').value = state.schedulingInterval;
     document.getElementById('players').value = state.players.join('\n') + '\n';
 
-    computeTotalsAndErrors();
+    computeOutputsAndErrors();
   }
 
   function main() {
