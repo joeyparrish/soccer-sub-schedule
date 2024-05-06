@@ -266,10 +266,20 @@
     const totals = document.getElementById('player-totals');
     const players = getPlayers();
 
+    const countId = 'player-count';
+    let count = document.getElementById(countId);
+    if (!count) {
+      count = document.createElement('div');
+      count.id = countId;
+      totals.appendChild(count);
+    }
+    count.innerText = `${players.length} players`;
+
     // Mark the children so we can clean up unused children.
     for (const child of totals.children) {
       child.visited = false;
     }
+    count.visited = true;
 
     for (const player of players) {
       const playerTotalId = `player-total-${player}`;
@@ -354,6 +364,12 @@
 
     document.getElementById('players').addEventListener(
         'change', updatePlayerSelectors);
+    document.getElementById('players').addEventListener(
+        'keypress', (event) => {
+      if (event.code == 'Enter') {
+        updatePlayerSelectors();
+      }
+    });
     document.addEventListener('keydown', trackModifiers);
     document.addEventListener('keyup', trackModifiers);
 

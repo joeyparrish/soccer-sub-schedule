@@ -57,6 +57,11 @@ select.warning {
   font-size: 125%;
 }
 
+#player-count {
+  margin-bottom: 1em;
+  font-weight: bold;
+}
+
 #player-totals .error {
   background-color: #ffaaaa;
 }
