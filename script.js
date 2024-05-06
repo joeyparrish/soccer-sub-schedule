@@ -542,6 +542,7 @@
       const state = decompressState(hash);
       console.log('Loading from hash', state);
       loadState(JSON.parse(state));
+      location.hash = '';
     } else {
       const state = localStorage.getItem('state');
       if (state) {
