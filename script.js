@@ -358,7 +358,7 @@
         for (const position of positions) {
           const {player, change} = getPlayerAt(position, half, time);
 
-          const {player: previousPlayer} = previousTime ?
+          const {player: previousPlayer} = previousTime != null ?
               getPlayerAt(position, half, previousTime) :
               {player: ''};
 
