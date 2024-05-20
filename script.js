@@ -395,6 +395,8 @@
     }
 
     checkSizes();
+
+    updateHash();
   }
 
   function getState() {
@@ -482,6 +484,30 @@
     }
   }
 
+  function updateHash() {
+    const state = JSON.stringify(getState());
+    console.log('Sharing state', state);
+    const hash = compressState(state);
+    console.log(`State compressed from ${state.length} to ${hash.length}`);
+
+    location.hash = hash;
+  }
+
+  function loadHash() {
+    const hash = location.hash.substr(1);
+    if (hash) {
+      const state = decompressState(hash);
+      console.log('Loading from hash', state);
+      loadState(JSON.parse(state));
+    } else {
+      const state = localStorage.getItem('state');
+      if (state) {
+        console.log('Loading state', state);
+        loadState(JSON.parse(state));
+      }
+    }
+  }
+
   function main() {
     window.addEventListener('resize', checkSizes);
 
@@ -525,31 +551,17 @@
     });
 
     document.getElementById('share').addEventListener('click', () => {
-      const state = JSON.stringify(getState());
-      console.log('Sharing state', state);
-      const hash = compressState(state);
-      console.log(`State compressed from ${state.length} to ${hash.length}`);
-
-      const url = (new URL(`#${hash}`, location.href)).toString();
-      navigator.clipboard.writeText(url);
+      updateHash();
+      navigator.clipboard.writeText(location.href);
       buttonReaction(event, 'Link copied!');
     });
 
+    // The hashchange event fires on navigation, but not on location.hash=...
+    window.addEventListener('hashchange', loadHash);
+
     buildTables();
 
-    const hash = location.hash.substr(1);
-    if (hash) {
-      const state = decompressState(hash);
-      console.log('Loading from hash', state);
-      loadState(JSON.parse(state));
-      location.hash = '';
-    } else {
-      const state = localStorage.getItem('state');
-      if (state) {
-        console.log('Loading state', state);
-        loadState(JSON.parse(state));
-      }
-    }
+    loadHash();
 
     computeOutputsAndErrors();
   }
