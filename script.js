@@ -1,5 +1,5 @@
 (function() {
-  const positions = ['GK', 'LD', 'RD', 'LM', 'CM', 'RM', 'ST'];
+  const positions = ['GK', 'LD', 'RD', 'CM', 'LM', 'RM', 'ST'];
 
   function numberInput(id) {
     const value = parseFloat(document.getElementById(id).value);
