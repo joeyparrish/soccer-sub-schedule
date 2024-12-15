@@ -237,6 +237,7 @@
   function computeOutputsAndErrors() {
     const dupMap = new Map();
     const timeMap = new Map();
+    const positionMap = new Map();
     const schedulingInterval = numberInput('scheduling-interval');
     const minTimePerPlayer = numberInput('min-time-per-player');
 
@@ -276,6 +277,11 @@
           // Track player time.
           const previousTime = timeMap.get(player) || 0;
           timeMap.set(player, previousTime + schedulingInterval);
+
+          // Track player positions.
+          const playerPositions = positionMap.get(player) || new Set();
+          playerPositions.add(position);
+          positionMap.set(player, playerPositions);
         });
       }
     }
@@ -302,7 +308,9 @@
       }
 
       const minutes = timeMap.get(player) || 0;
-      playerTotal.innerText = `${player}: ${minutes} minutes`;
+      const playerPositions = Array.from(positionMap.get(player) || []).join(', ');
+
+      playerTotal.innerText = `${player}: ${minutes} minutes at ${playerPositions}`;
       playerTotal.visited = true;
       if (minutes < minTimePerPlayer) {
         playerTotal.classList.add('error');
