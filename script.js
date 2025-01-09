@@ -1,13 +1,17 @@
 (function() {
   const positions = ['GK', 'LD', 'RD', 'CM', 'LM', 'RM', 'ST'];
 
+  function textInput(id) {
+    return document.getElementById(id).value;
+  }
+
   function numberInput(id) {
     const value = parseFloat(document.getElementById(id).value);
     return value;
   }
 
   function getPlayers() {
-    const players = document.getElementById('players').value
+    const players = textInput('players')
         .trim().split('\n').filter(x => !!x.trim()).map(x => x.trim());
     players.sort();
     return players;
@@ -409,6 +413,7 @@
 
   function getState() {
     const state = {
+      title: textInput('title'),
       timePerHalf: numberInput('time-per-half'),
       minTimePerPlayer: numberInput('min-time-per-player'),
       schedulingInterval: numberInput('scheduling-interval'),
@@ -438,6 +443,7 @@
     document.getElementById('min-time-per-player').value = state.minTimePerPlayer;
     document.getElementById('scheduling-interval').value = state.schedulingInterval;
     document.getElementById('players').value = state.players.join('\n') + '\n';
+    document.getElementById('title').value = state.title || '';
 
     buildTables();
     updatePlayerSelectors();
@@ -563,6 +569,8 @@
       navigator.clipboard.writeText(location.href);
       buttonReaction(event, 'Link copied!');
     });
+
+    document.getElementById('title').addEventListener('change', updateHash);
 
     // The hashchange event fires on navigation, but not on location.hash=...
     window.addEventListener('hashchange', loadHash);

@@ -80,6 +80,7 @@ td.half-2 {
 }
 
 #players {
+  width: 15em;
   height: 20em;
 }
 
@@ -106,4 +107,8 @@ select.change {
 
 #player-totals .error {
   background-color: #ffaaaa;
+}
+
+#title {
+  width: 15em;
 }
