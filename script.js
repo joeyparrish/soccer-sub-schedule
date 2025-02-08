@@ -1,5 +1,8 @@
 (function() {
-  const positions = ['GK', 'LD', 'RD', 'CM', 'LM', 'RM', 'ST'];
+  const positions = {
+    '231': ['GK', 'LD', 'RD', 'CM', 'LM', 'RM', 'ST', 'ALT'],
+    '1212': ['GK', 'CB', 'LDM', 'RDM', 'CAM', 'LS', 'RS', 'ALT'],
+  };
 
   function textInput(id) {
     return document.getElementById(id).value;
@@ -15,6 +18,11 @@
         .trim().split('\n').filter(x => !!x.trim()).map(x => x.trim());
     players.sort();
     return players;
+  }
+
+  function getFormation() {
+    const select = document.getElementById('formation');
+    return select.value;
   }
 
   function forEachTime(callback) {
@@ -173,7 +181,7 @@
     for (const half of [1, 2]) {
       remakeRow(half, '', makeHeaderCell);
 
-      for (const position of positions) {
+      for (const position of positions[getFormation()]) {
         remakeRow(half, position, makeDataCell);
       }
     }
@@ -246,7 +254,7 @@
     const minTimePerPlayer = numberInput('min-time-per-player');
 
     for (const half of [1, 2]) {
-      for (const position of positions) {
+      for (const position of positions[getFormation()]) {
         let previousPlayer = '';
         forEachTime((time) => {
           const {player, select} = getPlayerAt(position, half, time);
@@ -337,7 +345,7 @@
     }
     for (const half of [1, 2]) {
       forEachTime((time) => {
-        for (const position of positions) {
+        for (const position of positions[getFormation()]) {
           const {player, change} = getPlayerAt(position, half, time);
           if (player) {
             playerTimeline.get(player).set(`${half}-${time}`, position);
@@ -359,7 +367,7 @@
 
       // Compute starters first
       const starters = [];
-      for (const position of positions) {
+      for (const position of positions[getFormation()]) {
         const {player} = getPlayerAt(position, half, /* time= */ 0);
         starters.push(`${player} at ${position}`);
       }
@@ -367,7 +375,7 @@
                      'font-weight: bold');
 
       forEachTime((time) => {
-        for (const position of positions) {
+        for (const position of positions[getFormation()]) {
           const {player, change} = getPlayerAt(position, half, time);
 
           const {player: previousPlayer} = previousTime != null ?
@@ -418,10 +426,11 @@
       minTimePerPlayer: numberInput('min-time-per-player'),
       schedulingInterval: numberInput('scheduling-interval'),
       players: getPlayers(),
+      formation: getFormation(),
       positions: {},
     };
 
-    for (const position of positions) {
+    for (const position of positions[getFormation()]) {
       state.positions[position] = {};
 
       for (const half of [1, 2]) {
@@ -444,11 +453,12 @@
     document.getElementById('scheduling-interval').value = state.schedulingInterval;
     document.getElementById('players').value = state.players.join('\n') + '\n';
     document.getElementById('title').value = state.title || '';
+    document.getElementById('formation').value = state.formation || '231';
 
     buildTables();
     updatePlayerSelectors();
 
-    for (const position of positions) {
+    for (const position of positions[getFormation()]) {
       for (const half of [1, 2]) {
         forEachTime((time) => {
           const player = state.positions[position]?.[`${half}-${time}`] || '';
@@ -558,6 +568,7 @@
         minTimePerPlayer: 15,
         schedulingInterval: 2.5,
         players: [],
+        formation: document.getElementById('formation').options[0].value,
         positions: {},
       });
       computeOutputsAndErrors();
@@ -572,12 +583,28 @@
 
     document.getElementById('title').addEventListener('change', updateHash);
 
+    document.getElementById('formation').addEventListener('change', () => {
+      // Wipe the old tables.
+      for (const half of [1, 2]) {
+        const schedule = document.getElementById(`schedule-${half}`);
+        for (const row of schedule.querySelectorAll('tr')) {
+          if (row.id != 'halves') {
+            schedule.removeChild(row);
+          }
+        }
+      }
+
+      // Build new ones.
+      buildTables();
+      computeOutputsAndErrors();
+    });
+
     // The hashchange event fires on navigation, but not on location.hash=...
     window.addEventListener('hashchange', loadHash);
 
-    buildTables();
-
     loadHash();
+
+    buildTables();
 
     computeOutputsAndErrors();
   }
