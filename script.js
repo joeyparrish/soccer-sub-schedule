@@ -565,8 +565,8 @@
     document.getElementById('clear').addEventListener('click', () => {
       loadState({
         timePerHalf: 20,
-        minTimePerPlayer: 15,
-        schedulingInterval: 2.5,
+        minTimePerPlayer: 14,
+        schedulingInterval: 2,
         players: [],
         formation: document.getElementById('formation').options[0].value,
         positions: {},
