@@ -286,9 +286,11 @@
             select2.classList.add('error');
           }
 
-          // Track player time.
-          const previousTime = timeMap.get(player) || 0;
-          timeMap.set(player, previousTime + schedulingInterval);
+          // Track player time, excluding alternates.
+          if (position != 'ALT') {
+            const previousTime = timeMap.get(player) || 0;
+            timeMap.set(player, previousTime + schedulingInterval);
+          }
 
           // Track player positions.
           const playerPositions = positionMap.get(player) || new Set();
