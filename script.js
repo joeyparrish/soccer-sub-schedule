@@ -501,6 +501,12 @@
 
   function checkSizes() {
     const schedule = document.getElementById('schedule-1');
+    if (schedule.clientWidth == 0) {
+      // The layout hasn't been properly resolved yet.
+      console.log('Screen size check too early!');
+      return;
+    }
+
     if (schedule.clientWidth > document.body.clientWidth) {
       document.body.classList.add('too-small');
       console.error('TOO SMALL');
