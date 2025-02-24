@@ -12,83 +12,94 @@
   <body>
 
     <h1>Soccer Sub Scheduling Tool</h1>
-    <h1 class="too-small">Soccer Sub Scheduling Tool</h1>
 
-    <h2 class="too-small">
-      Your screen is too small!
-      Please try your phone in landscape mode,
-      or try a computer with a keyboard and mouse.
-    </h2>
-
-    <div id="buttons">
+    <div id="buttons" class="big-screen-only">
       <button id="save">Save</button>
       <button id="clear">Clear</button>
       <button id="share">Share</button>
     </div>
 
-    <div class="split">
-      <div>
-        <h2>Inputs</h2>
+    <details id="settings-zippy" open>
+      <summary><h2>Settings</h2></summary>
 
-        <div>
-          <label for="title">Game Title</label>
-          <input id="title">
+      <h2 class="small-screen-only">
+        Your screen is too small!
+        Please try your phone in landscape mode,
+        or try a computer with a keyboard and mouse.
+      </h2>
+
+      <div class="split">
+        <div id="game-settings" class="big-screen-only">
+          <div>
+            <label for="title">Game Title</label>
+            <input id="title">
+          </div>
+
+          <div>
+            <label for="time-per-half">Time per half</label>
+            <input id="time-per-half" type=number max=999 value=20>
+          </div>
+
+          <div>
+            <label for="min-time-per-player">Minimum time per player</label>
+            <input id="min-time-per-player" type=number max=999 value=14>
+          </div>
+
+          <div>
+            <label for="scheduling-interval">Scheduling interval</label>
+            <input id="scheduling-interval" type=number max=999 value=2>
+          </div>
+
+          <div>
+            <label for="players">Players</label>
+            <textarea id="players" spellcheck="false"></textarea>
+          </div>
+
+          <div>
+            <label for="formation">Formation</label>
+            <select id="formation">
+              <option value="1212">1-2-1-2</option>
+              <option value="231">2-3-1</option>
+            </select>
+          </div>
         </div>
 
-        <div>
-          <label for="time-per-half">Time per half</label>
-          <input id="time-per-half" type=number max=999 value=20>
-        </div>
-
-        <div>
-          <label for="min-time-per-player">Minimum time per player</label>
-          <input id="min-time-per-player" type=number max=999 value=14>
-        </div>
-
-        <div>
-          <label for="scheduling-interval">Scheduling interval</label>
-          <input id="scheduling-interval" type=number max=999 value=2>
-        </div>
-
-        <div>
-          <label for="players">Players</label>
-          <textarea id="players" spellcheck="false"></textarea>
-        </div>
-
-        <div>
-          <label for="formation">Formation</label>
-          <select id="formation">
-            <option value="1212">1-2-1-2</option>
-            <option value="231">2-3-1</option>
-          </select>
+        <div id="player-totals" class="big-screen-only">
+          <h2 id="player-count"></h2>
         </div>
       </div>
+    </details>
 
-      <div id="player-totals">
-        <h2 id="player-count"></h2>
+    <details id="schedule-zippy" open>
+      <summary><h2>Schedule</h2></summary>
+
+      <h2 class="small-screen-only">
+        Your screen is too small!
+        Please try your phone in landscape mode,
+        or try a computer with a keyboard and mouse.
+      </h2>
+
+      <div class="instructions big-screen-only">
+        Hold <tt>CTRL</tt> to <b>fill all future</b> cells in this half.
+        <br>
+        Hold <tt>SHIFT</tt> to <b>fill all future <i>empty</i></b> cells in this half.
       </div>
-    </div>
 
-    <div class="instructions">
-      Hold <tt>CTRL</tt> to <b>fill all future</b> cells in this half.
-      <br>
-      Hold <tt>SHIFT</tt> to <b>fill all future <i>empty</i></b> cells in this half.
-    </div>
-
-    <div id="schedule-container">
-      <table id="schedule-1">
-        <tr id="halves">
-          <th></th>
-          <th class="half-1" id="half-1">First Half</th>
-        </tr>
-      </table>
-      <table id="schedule-2">
-        <tr id="halves">
-          <th></th>
-          <th class="half-2" id="half-2">Second Half</th>
-        </tr>
-      </table>
-    </div>
+      <div id="schedule-container" class="big-screen-only">
+        <table id="schedule-1">
+          <tr id="halves">
+            <th></th>
+            <th class="half-1" id="half-1">First Half</th>
+          </tr>
+        </table>
+        <table id="schedule-2">
+          <tr id="halves">
+            <th></th>
+            <th class="half-2" id="half-2">Second Half</th>
+          </tr>
+        </table>
+      </div>
+    </details>
 
     <div id="timeline">
       <h2>Substitution Timeline</h2>

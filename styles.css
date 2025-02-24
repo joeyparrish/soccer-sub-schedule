@@ -1,19 +1,14 @@
-body:not(.too-small) > .too-small {
+body:not(.small-screen) .small-screen-only {
   display: none;
 }
 
-body.too-small > .too-small {
-  display: block;
-}
-
-body.too-small > :not(.too-small) {
+body.small-screen .big-screen-only {
   /* Subtle: These should still have width and display, or else recalculating
    * the size requirement of the schedule element will not be possible once
    * hidden.  Set height and margin to 0 so that they don't occupy vertical
    * space, but can still be used to calculate when the window is big enough
    * again.
    */
-  display: block;
   visibility: hidden;
   overflow: hidden;
   height: 0;
@@ -55,7 +50,6 @@ h2 {
 .split {
   box-sizing: border-box;
   width: 100%;
-  padding: 0 1em;
 }
 
 .split > * {
@@ -63,6 +57,14 @@ h2 {
   display: inline-block;
   width: calc(50% - 3em);
   vertical-align: top;
+}
+
+.split > summary {
+  display: list-item;
+}
+
+summary > * {
+  display: inline-block;
 }
 
 th, td {
@@ -90,7 +92,7 @@ td.half-2 {
 }
 
 #players {
-  width: 15em;
+  width: 12em;
   height: 20em;
 }
 
@@ -120,5 +122,5 @@ select.change {
 }
 
 #title {
-  width: 15em;
+  width: 12em;
 }

@@ -507,11 +507,19 @@
       return;
     }
 
-    if (schedule.clientWidth > document.body.clientWidth) {
-      document.body.classList.add('too-small');
+    const settingsZippy = document.getElementById('settings-zippy');
+    const scheduleZippy = document.getElementById('schedule-zippy');
+
+    const actuallyTooSmall = schedule.clientWidth > document.body.clientWidth;
+    if (actuallyTooSmall) {
+      document.body.classList.add('small-screen');
+      settingsZippy.open = false;
+      scheduleZippy.open = false;
       console.error('TOO SMALL');
     } else {
-      document.body.classList.remove('too-small');
+      document.body.classList.remove('small-screen');
+      settingsZippy.open = true;
+      scheduleZippy.open = true;
       console.error('RIGHT SIZE');
     }
   }
