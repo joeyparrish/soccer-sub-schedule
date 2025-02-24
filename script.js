@@ -357,14 +357,18 @@
     }
 
     // Compute the substitution timeline
-    const timeline = document.getElementById('timeline');
-    for (const child of Array.from(timeline.children)) {
-      if (child.tagName.toLowerCase() != 'h2') {
-        timeline.removeChild(child);
+    const timeline1 = document.getElementById('timeline-1');
+    const timeline2 = document.getElementById('timeline-2');
+    for (const timeline of [timeline1, timeline2]) {
+      for (const child of Array.from(timeline.children)) {
+        if (child.tagName.toLowerCase() != 'summary') {
+          timeline.removeChild(child);
+        }
       }
     }
+
     for (const half of [1, 2]) {
-      const nth = ['', 'First', 'Second'][half];
+      const timeline = [null, timeline1, timeline2][half];
       let previousTime = null;
 
       // Compute starters first
@@ -373,7 +377,7 @@
         const {player} = getPlayerAt(position, half, /* time= */ 0);
         starters.push(`${player} at ${position}`);
       }
-      appendTimeline(timeline, `${nth} half start: ${starters.join(', ')}`,
+      appendTimeline(timeline, `Start: ${starters.join(', ')}`,
                      'font-weight: bold');
 
       forEachTime((time) => {
@@ -412,8 +416,6 @@
 
         previousTime = time;
       });
-
-      appendTimeline(timeline, '', 'height: 1em');
     }
 
     checkSizes();

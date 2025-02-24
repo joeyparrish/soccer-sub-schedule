@@ -124,3 +124,15 @@ select.change {
 #title {
   width: 12em;
 }
+
+#timeline, #settings-zippy, #schedule-zippy {
+  margin: 2em 0;
+}
+
+summary h2, summary h3 {
+  margin: 0;
+}
+
+#timeline-1, #timeline-2 {
+  margin: 1em 0;
+}
