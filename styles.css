@@ -47,6 +47,10 @@ h2 {
   clear: right;
 }
 
+#buttons button#shareToMain {
+  display: none;
+}
+
 .split {
   box-sizing: border-box;
   width: 100%;

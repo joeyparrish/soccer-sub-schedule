@@ -599,6 +599,16 @@
       buttonReaction(event, 'Link copied!');
     });
 
+    if (location.hostname == 'localhost') {
+      const shareToMain = document.getElementById('shareToMain')
+      shareToMain.addEventListener('click', () => {
+        updateHash();
+        navigator.clipboard.writeText('https://joeyparrish.github.io/soccer-sub-schedule/' + location.hash);
+        buttonReaction(event, 'Link to main app copied!');
+      });
+      shareToMain.style.display = 'block';
+    }
+
     document.getElementById('title').addEventListener('change', updateHash);
 
     document.getElementById('formation').addEventListener('change', () => {
