@@ -520,8 +520,8 @@
       console.error('TOO SMALL');
     } else {
       document.body.classList.remove('small-screen');
-      settingsZippy.open = true;
-      scheduleZippy.open = true;
+      settingsZippy.open = settingsZippy.lastExplicitOpen;
+      scheduleZippy.open = scheduleZippy.lastExplicitOpen;
       console.error('RIGHT SIZE');
     }
   }
@@ -610,6 +610,16 @@
     }
 
     document.getElementById('title').addEventListener('change', updateHash);
+
+    const settingsZippy = document.getElementById('settings-zippy');
+    const scheduleZippy = document.getElementById('schedule-zippy');
+    for (const zippy of [settingsZippy, scheduleZippy]) {
+      zippy.lastExplicitOpen = true;
+      zippy.addEventListener('click', (event) => {
+        const newOpen = !zippy.open;
+        zippy.lastExplicitOpen = newOpen;
+      });
+    }
 
     document.getElementById('formation').addEventListener('change', () => {
       // Wipe the old tables.
