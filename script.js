@@ -615,7 +615,10 @@
     const scheduleZippy = document.getElementById('schedule-zippy');
     for (const zippy of [settingsZippy, scheduleZippy]) {
       zippy.lastExplicitOpen = true;
-      zippy.addEventListener('click', (event) => {
+
+      // Don't listen to clicks on all sub-elements, but specifically the
+      // heading to open/collapse.
+      zippy.querySelector('summary').addEventListener('click', (event) => {
         const newOpen = !zippy.open;
         zippy.lastExplicitOpen = newOpen;
       });
