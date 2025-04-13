@@ -2,6 +2,7 @@
   const positions = {
     '231': ['GK', 'LD', 'RD', 'CM', 'LM', 'RM', 'ST', 'ALT'],
     '1212': ['GK', 'CB', 'LDM', 'RDM', 'CAM', 'LS', 'RS', 'ALT'],
+    '1221': ['GK', 'CB', 'LDM', 'RDM', 'LAM', 'RAM', 'ST', 'ALT'],
   };
 
   function textInput(id) {
