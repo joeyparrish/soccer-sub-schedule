@@ -63,8 +63,10 @@ h2 {
   vertical-align: top;
 }
 
-.split > summary {
-  display: list-item;
+summary {
+  /* Making this inline makes it so you can tap to the far right of the heading
+   * without collapsing the section. */
+  display: inline list-item;
 }
 
 summary > * {
