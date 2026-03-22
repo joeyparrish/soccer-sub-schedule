@@ -118,33 +118,30 @@
   let controlClick = false;
 
   function trackModifiers(event) {
-    // Work around an ugly Chrome bug where key events don't fire while a
-    // select field is open.  With this, we see the release of the modifier
-    // while the select is still focused, and we activate the cascade after the
-    // fact.  To keep it from happening multiple times, we then blur the
-    // element.
-    if (event.type == 'keyup' &&
-        event.target.tagName.toLowerCase() == 'select') {
-      const select = event.target;
-      shiftClick =
-          (event.code == 'ShiftLeft' || event.code == 'ShiftRight');
-      controlClick =
-          (event.code == 'ControlLeft' || event.code == 'ControlRight');
+    const tagName = event.target?.tagName;
 
+    if (event.type == 'mousedown' && tagName == 'SELECT') {
+      shiftClick = event.shiftKey;
+      controlClick = event.ctrlKey || event.metaKey || event.altKey;
+    }
+
+    if (event.type == 'mousedown' && tagName == 'OPTION') {
       if (shiftClick || controlClick) {
-        cascadePlayer(select.value,
+        const option = event.target;
+        const select = option.parentElement;
+
+        cascadePlayer(option.value,
                       select.metadata.position,
                       select.metadata.half,
                       select.metadata.time,
                       /* overwrite= */ controlClick);
         computeOutputsAndErrors();
+
+        select.blur();
+        shiftClick = false;
+        controlClick = false;
       }
-
-      select.blur();
     }
-
-    shiftClick = event.shiftKey;
-    controlClick = event.ctrlKey;
   }
 
   function makeDataCell(position, half, time) {
